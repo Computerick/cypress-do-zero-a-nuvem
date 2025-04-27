@@ -13,9 +13,8 @@ describe('Central de Atendimento ao Cliente TAT', () => { //define a suite de te
     cy.get('#lastName').type('Felix')
     cy.get('#email').type('erick@email.com')
     cy.get('#phone').type('1299998888')
-    //cy.get('#open-text-area').type(longText, {delay: 0})
-    cy.get('#open-text-area').type(longText)
-    cy.get('button[type="submit"]').click()
+    cy.get('#open-text-area').type(longText, {delay: 0})
+    cy.contains('button', 'Enviar').click()
 
     cy.get('.success').should('be.visible')
   })
@@ -25,7 +24,7 @@ describe('Central de Atendimento ao Cliente TAT', () => { //define a suite de te
     cy.get('#lastName').type('Felix')
     cy.get('#email').type('emailError.com')
     cy.get('#phone').type('1299998888')
-    cy.get('button[type="submit"]').click()
+    cy.contains('button', 'Enviar').click()
     //verificacao
     cy.get('.error').should('be.visible')
   })
@@ -41,14 +40,12 @@ describe('Central de Atendimento ao Cliente TAT', () => { //define a suite de te
   cy.get('#lastName').type('Felix')
   cy.get('#email').type('emailError.com')
   cy.get('#phone-checkbox').click()
-  cy.get('button[type="submit"]').click()
+  cy.contains('button', 'Enviar').click()
   // verificacao
   cy.get('.error').should('be.visible')
  })
 
- it.only('preenche e limpa os campos nome, sobrenome, email e telefone', () =>{
-  after
-  
+ it('preenche e limpa os campos nome, sobrenome, email e telefone', () =>{
   cy.get('#firstName')
     .type('Erick')
     .should('have.value','Erick')
@@ -69,5 +66,32 @@ describe('Central de Atendimento ao Cliente TAT', () => { //define a suite de te
     .should('have.value','1299998888') 
     .clear()
     .should('have.value','')
+ })
+
+ it('exibe mensagem de erro ao submeter o formulário sem preencher os campos obrigatórios', () =>{
+  cy.get('#phone-checkbox').click()
+  cy.contains('button', 'Enviar').click()
+  // verificacao
+  cy.get('.error').should('be.visible')
+ })
+
+ it('envia o formulário com sucesso usando um comando customizado', () => {
+  const data = {
+    firstName: "Lilian",
+    lastName: "Beatriz",
+    email: "lika@email.com",
+    phone: "12999998888",
+    text: "TESTE_DELA"
+  } 
+  cy.fillMandatoryFieldsAndSubmit(data)
+  cy.contains('button', 'Enviar').click()
+  cy.get('.success').should('be.visible')
+ })
+
+ it('envia o formuário com sucesso usando um cy.contais', () => {
+  cy.fillMandatoryFieldsAndSubmit()
+  cy.contains('button', 'Enviar').click()
+
+  cy.get('.success').should('be.visible')
  })
 })
