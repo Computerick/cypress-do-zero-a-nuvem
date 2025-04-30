@@ -39,7 +39,7 @@ describe('Central de Atendimento ao Cliente TAT', () => { //define a suite de te
   cy.get('#firstName').type('Erick')
   cy.get('#lastName').type('Felix')
   cy.get('#email').type('emailError.com')
-  cy.get('#phone-checkbox').click()
+  cy.get('#phone-checkbox').check()
   cy.contains('button', 'Enviar').click()
   // verificacao
   cy.get('.error').should('be.visible')
@@ -77,9 +77,9 @@ describe('Central de Atendimento ao Cliente TAT', () => { //define a suite de te
 
  it('envia o formulário com sucesso usando um comando customizado', () => {
   const data = {
-    firstName: "Lilian",
-    lastName: "Beatriz",
-    email: "lika@email.com",
+    firstName: "Livia",
+    lastName: "Silvia",
+    email: "livia@email.com",
     phone: "12999998888",
     text: "TESTE_DELA"
   } 
@@ -88,10 +88,62 @@ describe('Central de Atendimento ao Cliente TAT', () => { //define a suite de te
   cy.get('.success').should('be.visible')
  })
 
- it('envia o formuário com sucesso usando um cy.contais', () => {
+ it('envia o formulário com sucesso usando um cy.contais', () => {
   cy.fillMandatoryFieldsAndSubmit()
   cy.contains('button', 'Enviar').click()
 
   cy.get('.success').should('be.visible')
+ })
+
+ it('seleciona um produto (YouTube) por seu texto', () => {
+  cy.get('#product')
+    .select('YouTube')
+    .should('have.value', 'youtube')
+ })
+
+ it('seleciona um produto (Mentoria) por seu valor', () => {
+  cy.get('#product')
+    .select('mentoria')
+    .should('have.value', 'mentoria')
+ })
+
+ it('seleciona um produto (Blog) por seu indice', () => {
+  cy.get('#product')
+    .select(1)
+    .should('have.value', 'blog')
+ })
+
+ it('seleciona um produto aleatório no select', () => {
+  cy.get('select option')
+    .not('[disabled]')
+    .its('length').then(n => {
+      cy.get('select').select(Cypress._.random(1, n))
+    })
+ })
+
+ it('marca o tipo de atendimento "Feedback"', () => {
+  cy.get('input[type="radio"][value="feedback"]')
+    .check()
+
+    .should('be.checked')
+ })
+
+ it('marca o tipo de atendimento', () => {
+  cy.get('input[type="radio"]')
+    //each recebe uma função, wrap empacota o elemento para visitar cada
+    .each((typeofService) => {
+      cy.wrap(typeofService)
+        .check()
+        .should('be.checked')
+    })
+ })
+
+ it.only('marca ambos checkboxes, depois desmarca o último', () => {
+  cy.get('input[type="checkbox"]')
+    .check() //marcará todos
+    .should('be.checked')
+    .last()
+    .uncheck()
+    .should('not.be.checked')
  })
 })
